@@ -3,8 +3,9 @@ pragma solidity >=0.4.22 <0.9.0;
 
 import "../node_modules/@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "./MintToken.sol";
+import "./Refund.sol";
 
-contract YTTCrowdSale {
+contract YTTCrowdSale{
   address public token;
   address payable public wallet;
   uint256 public rate;
@@ -14,6 +15,10 @@ contract YTTCrowdSale {
   uint256 public investorMaxCap = 10 ** 18; // Maximum ether each individual can spend to purchase tokens
   uint256 public openingTime;
   uint256 public closingTime;
+  uint256 public goal;
+  bool public isCrowdsaleFinished;
+
+  Refund public refundVault;
 
   mapping (address => uint256) public buyers;
 
@@ -25,14 +30,14 @@ contract YTTCrowdSale {
    * @param _rate amount of tokens to be minted per ether
    * @param _token token to mint
    */
-  modifier validInitValues(address _wallet, uint256 _rate, address _token, uint256 _openingTime, uint256 _closingTime){
+  modifier validInitValues(address _wallet, uint256 _rate, address _token, uint256 _openingTime, uint256 _closingTime, uint256 _goal, uint256 _hardCap){
     require(_rate > 0, "Token rate should be bigger than 0");
     require(_wallet != address(0), "Wallet address is not provided");
     require(_token != address(0), "Token address is not provided");
     require(_openingTime >= block.timestamp, "Current time is less than block's latest time");
     require(_closingTime >= _openingTime, "closing time is less than opening time");
-
-    _;
+    require(_goal <= _hardCap);
+    _;  
   }
 
   modifier onlyWhileOpen() {
@@ -48,13 +53,15 @@ contract YTTCrowdSale {
    * @param _token token to mint
    * @param _hardCap maximum amount of fund
    */
-  constructor(address payable _wallet, uint256 _rate, address _token, uint256 _hardCap, uint256 _openingTime, uint256 _closingTime) validInitValues(_wallet, _rate, _token, _openingTime, _closingTime){
+  constructor(address payable _wallet, uint256 _rate, address _token, uint256 _hardCap, uint256 _openingTime, uint256 _closingTime, uint256 _goal) validInitValues(_wallet, _rate, _token, _openingTime, _closingTime, _goal, _hardCap){
     wallet = _wallet;
     rate = _rate;
     token = _token;
     hardCap = _hardCap;
     openingTime = _openingTime;
     closingTime = _closingTime;
+    refundVault = new Refund(wallet);
+    goal = _goal;
   }
 
   /**
@@ -76,7 +83,8 @@ contract YTTCrowdSale {
     uint256 numberOfTokensToMint = calculateAmountToken(receivedValue);
     totalFundedInWei += receivedValue;
     MintToken(token).mint(_buyer, numberOfTokensToMint);
-    wallet.transfer(msg.value);
+    //wallet.transfer(msg.value);
+    refundVault.deposit{value: msg.value}(msg.sender);
   }
 
   /**
@@ -88,15 +96,61 @@ contract YTTCrowdSale {
     return rate * _receivedValue;
   }
 
+  /**
+   * @dev checks if the funds reach the cap
+   * @return bool whether funds reach the cap
+   */
   function hasReachedCap() public view returns (bool){
     return totalFundedInWei >= hardCap;
   }
 
+  /**
+   * @dev checks if the individual reach the cap
+   * @param _buyer address of buyer
+   * @return bool whether funds reach the cap
+   */
   function hasIndividualReachedCap(address _buyer) public view returns (bool){
     return buyers[_buyer] >= investorMaxCap;
   }
 
+  /**
+   * @dev checks if the current time passed the closing time
+   * @return bool whether current time passed the closing time
+   */
   function isClosed() public view returns (bool){
     return block.timestamp > closingTime;
+  }
+
+  /**
+   * @dev checks if funds reach the goal
+   * @return bool true if it reaches the goal
+   */
+  function hasReachedGoal() public view returns (bool) {
+    return totalFundedInWei >= goal;
+  }
+
+  /**
+   * @dev if goal has not been reached and crowdsale fininshed, buyer can claim refunds
+   */
+  function claimRefund() public {
+    require(!hasReachedGoal(), "Goal has been reached so you cannot get refund");
+    require(isCrowdsaleFinished);
+
+    refundVault.refund(payable(msg.sender));
+  }
+
+  /**
+   * @dev closes the crowdsale
+   */
+  function finishCrowdsale() public{
+    require(!isCrowdsaleFinished);
+
+    if(hasReachedGoal()){
+      refundVault.closeRefund();
+    } else {
+      refundVault.enableRefund();
+    }
+
+    isCrowdsaleFinished = true;
   }
 }

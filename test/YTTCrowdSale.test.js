@@ -19,6 +19,7 @@ contract("YTTCrowdSale", async (accounts) => {
   const rate = 500;
   const wallet = accounts[9];
   const hardCap = web3.utils.toWei("2", "ether");
+  const goal = web3.utils.toWei("1", "ether");
   let openingTime;
   let closingTime;
 
@@ -32,7 +33,8 @@ contract("YTTCrowdSale", async (accounts) => {
       yangTiToken.address,
       hardCap,
       new BigNumber(openingTime).add(new BigNumber("100")).toString(),
-      new BigNumber(openingTime).add(new BigNumber(closingTime)).toString()
+      new BigNumber(openingTime).add(new BigNumber(closingTime)).toString(),
+      goal
     );
 
     await yangTiToken.transferOwnership(yttCrowdSale.address);
@@ -54,6 +56,10 @@ contract("YTTCrowdSale", async (accounts) => {
     it("has correct cap value", async () => {
       const cap = await yttCrowdSale.hardCap();
       cap.should.be.bignumber.equal(hardCap);
+    });
+    it("has correct goal value", async () => {
+      const _goal = await yttCrowdSale.goal();
+      _goal.should.be.bignumber.equal(goal);
     });
   });
 
@@ -87,6 +93,7 @@ contract("YTTCrowdSale", async (accounts) => {
       const totalFundedInWei = await yttCrowdSale.totalFundedInWei();
       web3.utils.fromWei(totalFundedInWei, "ether").should.equal("1");
     });
+    /*
     it("correct funded ether is transfered to ICO owner's address ", async () => {
       const originalBalance = await web3.eth.getBalance(wallet);
       const value = web3.utils.toWei("1", "ether");
@@ -97,6 +104,7 @@ contract("YTTCrowdSale", async (accounts) => {
       const newBalance = await web3.eth.getBalance(wallet);
       assert.isTrue(newBalance > originalBalance);
     });
+    */
   });
 
   describe("cap", () => {
@@ -173,6 +181,75 @@ contract("YTTCrowdSale", async (accounts) => {
           value: value,
         })
         .should.be.rejectedWith(EVMRevert);
+    });
+  });
+
+  describe.only("goal", () => {
+    it("has reached goal", async () => {
+      let value = web3.utils.toWei("1", "ether");
+      await yttCrowdSale.buyTokens(accounts[1], {
+        from: accounts[1],
+        value: value,
+      }).should.be.fulfilled;
+      const hasReachedGoal = await yttCrowdSale.hasReachedGoal();
+      hasReachedGoal.should.be.true;
+    });
+    it("owner claims the funds when goal has been reached and crowdsale finished", async () => {
+      let value = web3.utils.toWei("1", "ether");
+      await yttCrowdSale.buyTokens(accounts[1], {
+        from: accounts[1],
+        value: value,
+      }).should.be.fulfilled;
+
+      value = web3.utils.toWei("1", "ether");
+      await yttCrowdSale.buyTokens(accounts[2], {
+        from: accounts[2],
+        value: value,
+      }).should.be.fulfilled;
+
+      const originalBalance = await web3.eth.getBalance(wallet);
+      await yttCrowdSale.finishCrowdsale();
+      const newBalance = await web3.eth.getBalance(wallet);
+      assert.isTrue(newBalance > originalBalance);
+    });
+    it("buyer claims the refunds when goal has not been reached and crowdsale finished", async () => {
+      let value = web3.utils.toWei("0.5", "ether");
+      await yttCrowdSale.buyTokens(accounts[1], {
+        from: accounts[1],
+        value: value,
+      }).should.be.fulfilled;
+
+      value = web3.utils.toWei("0.1", "ether");
+      await yttCrowdSale.buyTokens(accounts[2], {
+        from: accounts[2],
+        value: value,
+      }).should.be.fulfilled;
+
+      const originalBalance = await web3.eth.getBalance(accounts[1]);
+      await yttCrowdSale.finishCrowdsale();
+      await yttCrowdSale.claimRefund({ from: accounts[1] });
+      const newBalance = await web3.eth.getBalance(accounts[1]);
+      assert.isTrue(newBalance > originalBalance);
+    });
+
+    it("cannot claim refunds when the owner does not finish crowdsale", async () => {
+      let value = web3.utils.toWei("0.5", "ether");
+      await yttCrowdSale.buyTokens(accounts[1], {
+        from: accounts[1],
+        value: value,
+      }).should.be.fulfilled;
+
+      value = web3.utils.toWei("0.1", "ether");
+      await yttCrowdSale.buyTokens(accounts[2], {
+        from: accounts[2],
+        value: value,
+      }).should.be.fulfilled;
+
+      const originalBalance = await web3.eth.getBalance(accounts[1]);
+      await yttCrowdSale.finishCrowdsale();
+      await yttCrowdSale.claimRefund({ from: accounts[1] });
+      const newBalance = await web3.eth.getBalance(accounts[1]);
+      assert.isTrue(newBalance > originalBalance);
     });
   });
 });
