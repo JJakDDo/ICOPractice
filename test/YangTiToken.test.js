@@ -11,7 +11,7 @@ contract("YangTiToken", (accounts) => {
   const name = "YangTi Token";
   const symbol = "YTT";
   const deployer = accounts[0];
-  before(async () => {
+  beforeEach(async () => {
     yangTiToken = await YangTiToken.new(name, symbol);
   });
   describe("token attributes", () => {
@@ -32,6 +32,7 @@ contract("YangTiToken", (accounts) => {
       totalSupply.should.be.bignumber.equal("1");
     });
     it("token owner has the correct balance", async () => {
+      await yangTiToken.mint(accounts[1], 1);
       const balance = await yangTiToken.balanceOf(accounts[1]);
       balance.should.be.bignumber.equal("1");
     });

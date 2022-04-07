@@ -3,7 +3,7 @@ pragma solidity >=0.4.22 <0.9.0;
 
 import "./MintToken.sol";
 
-contract YangTiToken is MintToken {
+contract YangTiToken is ERC20, MintToken {
   /**
    * @dev constructor create YangTiToken
    * @param _name token name
