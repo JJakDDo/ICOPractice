@@ -45,8 +45,6 @@ module.exports = {
       host: "127.0.0.1", // Localhost (default: none)
       port: 8545, // Standard Ethereum port (default: none)
       network_id: "*", // Any network (default: none)
-      gas: 8500000, // Gas sent with each transaction (default: ~6700000)
-      gasPrice: 20000000000, // 20 gwei (in wei) (default: 100 gwei)
     },
     // Another network with more advanced options...
     // advanced: {
@@ -79,7 +77,7 @@ module.exports = {
   mocha: {
     // timeout: 100000
   },
-
+  contracts_build_directory: "./client/src/contracts",
   // Configure your compilers
   compilers: {
     solc: {
@@ -91,7 +89,7 @@ module.exports = {
           enabled: true,
           runs: 200,
         },
-        evmVersion: "byzantium",
+        //evmVersion: "byzantium",
         // }
       },
     },
