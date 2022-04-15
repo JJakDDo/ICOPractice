@@ -155,4 +155,8 @@ contract YTTCrowdSale is Ownable{
 
     isCrowdsaleFinished = true;
   }
+
+  function lockToken() public onlyOwner {
+    MintToken(token).lockTransfer();
+  }
 }

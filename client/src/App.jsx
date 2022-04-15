@@ -3,6 +3,8 @@ import logo from "./logo.svg";
 import "./App.css";
 import { ethers } from "ethers";
 import Navbar from "./component/Navbar";
+import { address, abi } from "./contract/Crowdsale";
+import Timer from "./component/Timer";
 
 function App() {
   const [count, setCount] = useState(0);
@@ -10,6 +12,7 @@ function App() {
   const [signer, setSigner] = useState({});
   const [account, setAccount] = useState("");
   const [isLogin, setIsLogin] = useState(false);
+  const [crowdSaleContract, setCrowdSaleContract] = useState({});
 
   const connectToWallet = async () => {
     await provider.send("eth_requestAccounts", []);
@@ -25,19 +28,24 @@ function App() {
   };
 
   useEffect(() => {
-    const getProvdier = async () => {
+    const getProvdierAndContract = async () => {
       const _provider = new ethers.providers.Web3Provider(window.ethereum);
 
+      const contract = new ethers.Contract(address, abi, _provider);
       setProvider(_provider);
+      setCrowdSaleContract(contract);
     };
-    getProvdier();
+    getProvdierAndContract();
   }, []);
   return (
-    <Navbar
-      connectToWallet={connectToWallet}
-      isLogin={isLogin}
-      account={account}
-    />
+    <>
+      <Navbar
+        connectToWallet={connectToWallet}
+        isLogin={isLogin}
+        account={account}
+      />
+      <Timer crowdSaleContract={crowdSaleContract} />
+    </>
   );
 }
 
