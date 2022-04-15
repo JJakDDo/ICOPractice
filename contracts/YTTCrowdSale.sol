@@ -1,11 +1,12 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.4.22 <0.9.0;
 
-import "../node_modules/@openzeppelin/contracts/token/ERC20/ERC20.sol";
+import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
 import "./MintToken.sol";
 import "./Refund.sol";
 
-contract YTTCrowdSale{
+contract YTTCrowdSale is Ownable{
   address public token;
   address payable public wallet;
   uint256 public rate;
@@ -142,7 +143,7 @@ contract YTTCrowdSale{
   /**
    * @dev closes the crowdsale
    */
-  function finishCrowdsale() public{
+  function finishCrowdsale() public onlyOwner {
     require(!isCrowdsaleFinished);
 
     if(hasReachedGoal()){
