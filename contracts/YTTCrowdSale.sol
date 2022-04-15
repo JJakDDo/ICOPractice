@@ -148,6 +148,7 @@ contract YTTCrowdSale is Ownable{
 
     if(hasReachedGoal()){
       refundVault.closeRefund();
+      MintToken(token).unLockTransfer();
     } else {
       refundVault.enableRefund();
     }
