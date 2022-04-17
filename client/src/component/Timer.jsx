@@ -10,10 +10,9 @@ const style = {
   alignItems: "center",
 };
 
-const Timer = ({ crowdSaleContract }) => {
+const Timer = ({ crowdSaleContract, hasStarted, setHasStarted }) => {
   const [openingTime, setOpeningTime] = useState(0);
   const [closingTime, setClosingTime] = useState(0);
-  const [hasStarted, setHasStarted] = useState(false);
   const [days, setDays] = useState(0);
   const [hours, setHours] = useState(0);
   const [minutes, setMintes] = useState(0);

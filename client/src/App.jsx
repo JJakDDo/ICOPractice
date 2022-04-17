@@ -4,10 +4,15 @@ import "./App.css";
 import { ethers } from "ethers";
 import Navbar from "./component/Navbar";
 import { address, abi } from "./contract/Crowdsale";
+import {
+  address as tokenAddress,
+  abi as tokenABI,
+} from "./contract/ERC20Token";
 import Timer from "./component/Timer";
 import Goal from "./component/Goal";
 import Container from "@mui/material/Container";
 import Info from "./component/Info";
+import Fund from "./component/Fund";
 
 function App() {
   const [count, setCount] = useState(0);
@@ -16,6 +21,8 @@ function App() {
   const [account, setAccount] = useState("");
   const [isLogin, setIsLogin] = useState(false);
   const [crowdSaleContract, setCrowdSaleContract] = useState({});
+  const [tokenContract, setTokenContract] = useState({});
+  const [hasStarted, setHasStarted] = useState(false);
 
   const connectToWallet = async () => {
     await provider.send("eth_requestAccounts", []);
@@ -34,9 +41,15 @@ function App() {
     const getProvdierAndContract = async () => {
       const _provider = new ethers.providers.Web3Provider(window.ethereum);
 
-      const contract = new ethers.Contract(address, abi, _provider);
+      const contract = new ethers.Contract(address, abi, _provider.getSigner());
+      const _tokenContract = new ethers.Contract(
+        tokenAddress,
+        tokenABI,
+        _provider
+      );
       setProvider(_provider);
       setCrowdSaleContract(contract);
+      setTokenContract(_tokenContract);
     };
     getProvdierAndContract();
   }, []);
@@ -56,8 +69,19 @@ function App() {
           flexDirection: "column",
         }}
       >
-        <Timer crowdSaleContract={crowdSaleContract} />
+        <Timer
+          crowdSaleContract={crowdSaleContract}
+          hasStarted={hasStarted}
+          setHasStarted={setHasStarted}
+        />
         <Goal crowdSaleContract={crowdSaleContract} />
+        <Fund
+          crowdSaleContract={crowdSaleContract}
+          isLogin={isLogin}
+          hasStarted={hasStarted}
+          account={account}
+          tokenContract={tokenContract}
+        />
         <Info crowdSaleContract={crowdSaleContract} />
       </Container>
     </>
