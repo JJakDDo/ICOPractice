@@ -7,6 +7,7 @@ import { address, abi } from "./contract/Crowdsale";
 import Timer from "./component/Timer";
 import Goal from "./component/Goal";
 import Container from "@mui/material/Container";
+import Info from "./component/Info";
 
 function App() {
   const [count, setCount] = useState(0);
@@ -57,6 +58,7 @@ function App() {
       >
         <Timer crowdSaleContract={crowdSaleContract} />
         <Goal crowdSaleContract={crowdSaleContract} />
+        <Info crowdSaleContract={crowdSaleContract} />
       </Container>
     </>
   );

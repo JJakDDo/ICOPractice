@@ -29,7 +29,7 @@ const Goal = ({ crowdSaleContract }) => {
 
   return (
     <>
-      <Box sx={{ width: "50%" }} style={{ paddingTop: "100px" }}>
+      <Box sx={{ width: "50%" }} style={{ paddingTop: "50px" }}>
         <Box
           sx={{
             width: "50%",
