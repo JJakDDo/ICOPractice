@@ -57,14 +57,7 @@ const Timer = ({ crowdSaleContract }) => {
     return () => clearInterval(intervalId);
   }, [openingTime]);
   return (
-    <div
-      style={{
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        flexDirection: "column",
-      }}
-    >
+    <div>
       <br />
       {hasStarted ? (
         <Typography variant='h2' component='div'>

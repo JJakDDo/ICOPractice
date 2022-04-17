@@ -5,6 +5,8 @@ import { ethers } from "ethers";
 import Navbar from "./component/Navbar";
 import { address, abi } from "./contract/Crowdsale";
 import Timer from "./component/Timer";
+import Goal from "./component/Goal";
+import Container from "@mui/material/Container";
 
 function App() {
   const [count, setCount] = useState(0);
@@ -44,7 +46,18 @@ function App() {
         isLogin={isLogin}
         account={account}
       />
-      <Timer crowdSaleContract={crowdSaleContract} />
+      <Container
+        maxWidth='md'
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          flexDirection: "column",
+        }}
+      >
+        <Timer crowdSaleContract={crowdSaleContract} />
+        <Goal crowdSaleContract={crowdSaleContract} />
+      </Container>
     </>
   );
 }
