@@ -34,20 +34,24 @@ const Timer = ({ crowdSaleContract }) => {
   useEffect(() => {
     const intervalId = setInterval(() => {
       const currentTime = Math.floor(new Date().getTime() / 1000);
+      let time;
       if (currentTime < openingTime) {
-        let time = openingTime - currentTime;
-        const day = Math.floor(time / 86400);
-        setDays(day);
-        time -= day * 86400;
-        const hour = Math.floor(time / 3600);
-        setHours(hour);
-        time -= hour * 3600;
-        const minute = Math.floor(time / 60);
-        setMintes(minute);
-        time -= minute * 60;
-        setSeconds(time);
+        time = openingTime - currentTime;
         setHasStarted(false);
+      } else {
+        time = closingTime - currentTime;
+        setHasStarted(true);
       }
+      const day = Math.floor(time / 86400);
+      setDays(day);
+      time -= day * 86400;
+      const hour = Math.floor(time / 3600);
+      setHours(hour);
+      time -= hour * 3600;
+      const minute = Math.floor(time / 60);
+      setMintes(minute);
+      time -= minute * 60;
+      setSeconds(time);
     }, 1000);
 
     return () => clearInterval(intervalId);
