@@ -1,6 +1,5 @@
 import React from "react";
 import Box from "@mui/material/Box";
-import Container from "@mui/material/Container";
 import Typography from "@mui/material/Typography";
 
 const Info = ({ crowdSaleContract }) => {
@@ -9,6 +8,9 @@ const Info = ({ crowdSaleContract }) => {
       <Box sx={{ width: "100%", maxWidth: 500, marginTop: "30px" }}>
         <Typography variant='body1' component='div' gutterBottom>
           * 총 5 ETH 만큼의 토큰만 발행할 예정입니다.
+        </Typography>
+        <Typography variant='body1' component='div' gutterBottom>
+          * 1 ETH로 총 1000개의 토큰을 받을 수 있습니다.
         </Typography>
         <Typography variant='body1' component='div' gutterBottom>
           * 목표 금액을 달성하면 토큰을 자유롭게 사용할 수 있습니다.
