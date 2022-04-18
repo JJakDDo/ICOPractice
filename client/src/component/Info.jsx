@@ -25,6 +25,10 @@ const Info = ({ crowdSaleContract }) => {
         <Typography variant='body1' component='div' gutterBottom>
           * 한 사람당 최대 1 ETH 만큼만 구매가 가능합니다.
         </Typography>
+        <Typography variant='body1' component='div' gutterBottom>
+          * 메타마스크에서 토큰이 보이지 않으면 다음 토큰 주소로 직접 추가하시면
+          됩니다. (0x92bB6BcF67608B4E4DD2fAaCA130ceD2d165C7EA)
+        </Typography>
       </Box>
     </>
   );

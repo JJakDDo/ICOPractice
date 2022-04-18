@@ -22,21 +22,20 @@ const Fund = ({
   const [isError, setIsError] = useState(false);
 
   const [fundAmount, setFundAmount] = useState("");
+  const getFundInfo = async () => {
+    const fundedByBuyer = await crowdSaleContract.buyers(account);
+    const ownedToken = await tokenContract.balanceOf(account);
+    const _min = await crowdSaleContract.investorMinCap();
+    const _max = await crowdSaleContract.investorMaxCap();
+
+    setCurrentFunded(ethers.utils.formatEther(fundedByBuyer));
+    setCurrentToken(ethers.utils.formatEther(ownedToken));
+    console.log(ethers.utils.formatEther(_min));
+    setMin(ethers.utils.formatEther(_min));
+    setMax(ethers.utils.formatEther(_max));
+  };
 
   useEffect(() => {
-    const getFundInfo = async () => {
-      const fundedByBuyer = await crowdSaleContract.buyers(account);
-      const ownedToken = await tokenContract.balanceOf(account);
-      const _min = await crowdSaleContract.investorMinCap();
-      const _max = await crowdSaleContract.investorMaxCap();
-
-      setCurrentFunded(ethers.utils.formatEther(fundedByBuyer));
-      setCurrentToken(ethers.utils.formatEther(ownedToken));
-      console.log(ethers.utils.formatEther(_min));
-      setMin(ethers.utils.formatEther(_min));
-      setMax(ethers.utils.formatEther(_max));
-    };
-
     if (isLogin && crowdSaleContract.address && tokenContract.address)
       getFundInfo();
   }, [crowdSaleContract, tokenContract, isLogin]);
@@ -47,10 +46,10 @@ const Fund = ({
   const buyToken = async (e) => {
     e.preventDefault();
     if (!isLogin) return;
-
+    console.log(Number(fundAmount) + Number(currentFunded));
     if (fundAmount < min) {
       setIsLTMin(true);
-    } else if (fundAmount > max) {
+    } else if (Number(fundAmount) + Number(currentFunded) > max) {
       setIsGTMax(true);
     } else {
       setIsLTMin(false);
@@ -60,6 +59,7 @@ const Fund = ({
           from: account,
           value: ethers.utils.parseEther(fundAmount),
         });
+        getFundInfo();
         setIsError(false);
       } catch (err) {
         setIsError(true);
