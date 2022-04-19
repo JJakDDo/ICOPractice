@@ -12,6 +12,8 @@ const Fund = ({
   isLogin,
   hasStarted,
   account,
+  isOver,
+  hasReachedGoal,
 }) => {
   const [currentFunded, setCurrentFunded] = useState(0);
   const [currentToken, setCurrentToken] = useState(0);
@@ -20,6 +22,7 @@ const Fund = ({
   const [isLTMin, setIsLTMin] = useState(false);
   const [isGTMax, setIsGTMax] = useState(false);
   const [isError, setIsError] = useState(false);
+  const [refundMsg, setRefundMsg] = useState("");
 
   const [fundAmount, setFundAmount] = useState("");
   const getFundInfo = async () => {
@@ -33,6 +36,15 @@ const Fund = ({
     console.log(ethers.utils.formatEther(_min));
     setMin(ethers.utils.formatEther(_min));
     setMax(ethers.utils.formatEther(_max));
+  };
+
+  const refund = async () => {
+    try {
+      //await crowdSaleContract.claimRefund();
+      setRefundMsg(`${currentFunded} ETH가 환불되었습니다.`);
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   useEffect(() => {
@@ -95,25 +107,45 @@ const Fund = ({
           alignItems: "center",
         }}
       >
-        <TextField
-          {...(isLTMin
-            ? { error: true, helperText: "0.001ETH 보다 더 구매해야합니다." }
-            : isGTMax
-            ? {
-                error: true,
-                helperText: `${
-                  max - currentFunded
-                }ETH 보다 적게 구매해야합니다.`,
-              }
-            : { error: false })}
-          id='standard-basic'
-          label='ETH'
-          variant='standard'
-          onChange={getAmount}
-        />
-        <Button variant='outlined' onClick={buyToken}>
-          구매
-        </Button>
+        {!isOver ? (
+          <>
+            <TextField
+              {...(isLTMin
+                ? {
+                    error: true,
+                    helperText: "0.001ETH 보다 더 구매해야합니다.",
+                  }
+                : isGTMax
+                ? {
+                    error: true,
+                    helperText: `${
+                      max - currentFunded
+                    }ETH 보다 적게 구매해야합니다.`,
+                  }
+                : { error: false })}
+              id='standard-basic'
+              label='ETH'
+              variant='standard'
+              onChange={getAmount}
+            />
+            <Button variant='outlined' onClick={buyToken}>
+              구매
+            </Button>
+          </>
+        ) : hasReachedGoal ? (
+          <Typography variant='h7' gutterBottom>
+            ICO가 성공적입니다! 토큰을 자유롭게 사용하실 수 있습니다!
+          </Typography>
+        ) : (
+          <>
+            <Button variant='outlined' onClick={refund}>
+              환불
+            </Button>
+            <Typography variant='body2' gutterBottom>
+              {refundMsg}
+            </Typography>
+          </>
+        )}
       </Box>
       <br />
       {isLogin || (

@@ -10,7 +10,7 @@ const style = {
   alignItems: "center",
 };
 
-const Timer = ({ crowdSaleContract, hasStarted, setHasStarted }) => {
+const Timer = ({ crowdSaleContract, hasStarted, setHasStarted, setIsOver }) => {
   const [openingTime, setOpeningTime] = useState(0);
   const [closingTime, setClosingTime] = useState(0);
   const [days, setDays] = useState(0);
@@ -37,9 +37,12 @@ const Timer = ({ crowdSaleContract, hasStarted, setHasStarted }) => {
       if (currentTime < openingTime) {
         time = openingTime - currentTime;
         setHasStarted(false);
-      } else {
+      } else if (currentTime < closingTime) {
         time = closingTime - currentTime;
         setHasStarted(true);
+      } else {
+        setIsOver(true);
+        return;
       }
       const day = Math.floor(time / 86400);
       setDays(day);

@@ -20,6 +20,8 @@ function App() {
   const [signer, setSigner] = useState({});
   const [account, setAccount] = useState("");
   const [isLogin, setIsLogin] = useState(false);
+  const [isOver, setIsOver] = useState(false);
+  const [hasReachedGoal, setHasReachedGoal] = useState(false);
   const [crowdSaleContract, setCrowdSaleContract] = useState({});
   const [tokenContract, setTokenContract] = useState({});
   const [hasStarted, setHasStarted] = useState(false);
@@ -35,6 +37,11 @@ function App() {
 
     console.log(_account);
     console.log(ethers.utils.formatEther(balance));
+  };
+
+  const checkIfReachedGoal = async () => {
+    const hasReach = await crowdSaleContract.hasReachedGoal();
+    setHasReachedGoal(hasReach);
   };
 
   useEffect(() => {
@@ -53,6 +60,12 @@ function App() {
     };
     getProvdierAndContract();
   }, []);
+
+  useEffect(() => {
+    if (isOver) {
+      checkIfReachedGoal();
+    }
+  }, [isOver]);
   return (
     <>
       <Navbar
@@ -73,6 +86,7 @@ function App() {
           crowdSaleContract={crowdSaleContract}
           hasStarted={hasStarted}
           setHasStarted={setHasStarted}
+          setIsOver={setIsOver}
         />
         <Goal crowdSaleContract={crowdSaleContract} />
         <Fund
@@ -81,6 +95,8 @@ function App() {
           hasStarted={hasStarted}
           account={account}
           tokenContract={tokenContract}
+          isOver={isOver}
+          hasReachedGoal={hasReachedGoal}
         />
         <Info crowdSaleContract={crowdSaleContract} />
       </Container>
