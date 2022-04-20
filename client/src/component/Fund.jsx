@@ -40,7 +40,7 @@ const Fund = ({
 
   const refund = async () => {
     try {
-      //await crowdSaleContract.claimRefund();
+      await crowdSaleContract.claimRefund();
       setRefundMsg(`${currentFunded} ETH가 환불되었습니다.`);
     } catch (err) {
       console.log(err);
