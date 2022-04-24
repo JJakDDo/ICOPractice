@@ -10,7 +10,13 @@ const style = {
   alignItems: "center",
 };
 
-const Timer = ({ crowdSaleContract, hasStarted, setHasStarted, setIsOver }) => {
+const Timer = ({
+  crowdSaleContract,
+  hasStarted,
+  setHasStarted,
+  setIsOver,
+  isOver,
+}) => {
   const [openingTime, setOpeningTime] = useState(0);
   const [closingTime, setClosingTime] = useState(0);
   const [days, setDays] = useState(0);
@@ -65,9 +71,13 @@ const Timer = ({ crowdSaleContract, hasStarted, setHasStarted, setIsOver }) => {
         <Typography variant='h2' component='div'>
           ICO가 진행 중입니다. 양띠클럽 토큰을 구매할 수 있습니다.
         </Typography>
-      ) : (
+      ) : !isOver ? (
         <Typography variant='h2' component='div'>
           양띠클럽 ICO가 곧 시작합니다.
+        </Typography>
+      ) : (
+        <Typography variant='h2' component='div'>
+          ICO가 종료되었습니다.
         </Typography>
       )}
       <br />

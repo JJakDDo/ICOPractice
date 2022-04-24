@@ -87,6 +87,7 @@ function App() {
           hasStarted={hasStarted}
           setHasStarted={setHasStarted}
           setIsOver={setIsOver}
+          isOver={isOver}
         />
         <Goal crowdSaleContract={crowdSaleContract} />
         <Fund
