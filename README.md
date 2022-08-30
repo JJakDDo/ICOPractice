@@ -7,6 +7,9 @@
 <img src="https://img.shields.io/badge/Solidity-363636?style=flat&logo=Solidity&logoColor=white"/></a>
 <img src="https://img.shields.io/badge/Web3.js-F16822?style=flat&logo=Web3.js&logoColor=white"/></a>
 
+배포 링크: [ico-two-blue.vercel.app](https://ico-two-blue.vercel.app/)
+
+
 ## 설치 방법
 ### 클라이언트 실행
 ```
@@ -16,6 +19,9 @@ npm run dev
 ```
 
 ## 구현한 기능
+
+<img src="https://user-images.githubusercontent.com/34996487/187458498-3f5eacf1-012c-419c-9dc8-b2b631139b33.gif" />
+
 - ERC20 토큰 스마트 컨트랙트
 - 정해진 시간 내에서만 토큰을 구매
 - 한 사람이 구매할 수 있는 총 토큰량 제한
