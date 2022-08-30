@@ -68,7 +68,7 @@ const Fund = ({
       setIsLTMin(false);
       setIsGTMax(false);
       try {
-        await crowdSaleContract.buyTokens(account, {
+        const res = await crowdSaleContract.buyTokens(account, {
           from: account,
           value: ethers.utils.parseEther(fundAmount),
         });
